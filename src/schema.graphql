@@ -101,6 +101,7 @@ enum PostOrderField {
 }
 
 type Query {
+  allUsers: [User!]!
   hello(name: String!): String!
   helloWorld: String!
   me: User!
