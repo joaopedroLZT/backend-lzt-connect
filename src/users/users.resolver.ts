@@ -68,9 +68,4 @@ export class UsersResolver {
       updateRoleData.role,
     );
   }
-
-  @ResolveField('posts')
-  posts(@Parent() author: User) {
-    return this.prisma.user.findUnique({ where: { id: author.id } }).posts();
-  }
 }

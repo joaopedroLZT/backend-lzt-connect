@@ -13,10 +13,10 @@ generator dbml {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String   @unique
+  id        String          @id @default(cuid())
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  email     String          @unique
   password  String
   firstname String?
   lastname  String?
@@ -26,19 +26,281 @@ model User {
   city      String?
   state     String?
   zipCode   String?
-  posts     Post[]
+  tickets   WintourTicket[]
   role      Role
 }
 
-model Post {
+model WintourHeader {
+  id           String          @id @default(cuid())
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  nr_arquivo   String          @unique
+  data_geracao String
+  hora_geracao String
+  nome_agencia String
+  versao_xml   Int             @default(4)
+  tickets      WintourTicket[]
+}
+
+model WintourTicket {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  published Boolean
-  title     String
-  content   String?
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  String?
+
+  header   WintourHeader? @relation(fields: [headerId], references: [id])
+  headerId String?
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  // Campos principais do Bilhete
+  idv_externo             String?
+  id_posto_atendimento    Int?
+  posto_atendimento       String?
+  dt_interna_cadastro     DateTime?
+  data_lancamento         DateTime?
+  codigo_produto          String?
+  fornecedor              String?
+  prestador_svc           String?
+  num_bilhete             String?
+  localizador             String?
+  tour_code               String?
+  forma_de_pagamento      String?
+  cartao_mp               String?
+  cartao_cp               String?
+  conta_taxas_adicionais  String?
+  conta_taxas_adicionais2 String?
+  cod_outras_txs          String?
+  cod_outras_txs2         String?
+  cod_outras_txs3         String?
+  cta_tx_emissao          String?
+  ccustos_agencia         String?
+  moeda                   String?   @default("BRL")
+  emissor                 String?
+  promotor                String?
+  gerente                 String?
+  cliente                 String?
+  ccustos_cliente         String?
+  numero_requisicao       String?
+  data_requisicao         DateTime?
+  passageiro              String?
+  tipo_passageiro         String?
+  solicitante             String?
+  aprovador               String?
+  departamento            String?
+  matricula               String?
+  num_cc                  String?
+  cod_autorizacao_cc      String?
+  tipo_domest_inter       String?   @default("D")
+  scdp                    String?
+  info_adicionais         String?
+  info_internas           String?
+  canal_captacao          String?
+  cta_du_rav              String?   @default("TX-DU")
+  situacao_contabil       String?
+  projeto                 String?
+  motivo_viagem           String?
+  motivo_recusa           String?
+  tipo_roteiro_aereo      String?
+  destino_rot_aereo       String?
+  canal_venda             String?
+  multi_ccustos_cli       String?
+  tipo_roteiro            Int?
+  tarifa_net              Int?
+  tipo_emissao            String?   @default("E")
+  co2_kg                  Float?
+  cid_dest_principal      String?
+
+  // Relacionamentos
+  apportionments WintourApportionment[]
+  sales_origins  WintourSalesOrigin[]
+  conjugates     WintourTicketConjugate[]
+  values         WintourValue[]
+  expiry_dates   WintourExpiry[]
+  air_data       WintourAir?
+  hotel_data     WintourHotel?
+  location_data  WintourLocation?
+  package_data   WintourPackage?
+  other_services WintourOtherService?
+  transfer_data  WintourTransfer?
+  customer_data  WintourCustomerData?
+  wintourOther   WintourOther?
+}
+
+model WintourApportionment {
+  id              String        @id @default(cuid())
+  ticketId        String
+  ticket          WintourTicket @relation(fields: [ticketId], references: [id])
+  ccustos_cliente String
+  percentual      Float
+}
+
+model WintourSalesOrigin {
+  id       String        @id @default(cuid())
+  ticketId String
+  ticket   WintourTicket @relation(fields: [ticketId], references: [id])
+  item     Int
+}
+
+model WintourTicketConjugate {
+  id       String        @id @default(cuid())
+  ticketId String
+  ticket   WintourTicket @relation(fields: [ticketId], references: [id])
+  item     String
+}
+
+model WintourValue {
+  id       String        @id @default(cuid())
+  ticketId String
+  ticket   WintourTicket @relation(fields: [ticketId], references: [id])
+  codigo   String
+  valor    Float
+  valor_df Float?
+  valor_mp Float?
+}
+
+model WintourExpiry {
+  id       String        @id @default(cuid())
+  ticketId String
+  ticket   WintourTicket @relation(fields: [ticketId], references: [id])
+  codigo   String
+  valor    DateTime
+}
+
+model WintourAir {
+  id       String           @id @default(cuid())
+  ticketId String           @unique
+  ticket   WintourTicket    @relation(fields: [ticketId], references: [id])
+  sections WintourSection[]
+}
+
+model WintourSection {
+  id                  String     @id @default(cuid())
+  airId               String
+  air                 WintourAir @relation(fields: [airId], references: [id])
+  cia_iata            String
+  numero_voo          String?
+  aeroporto_origem    String
+  aeroporto_destino   String
+  data_partida        DateTime?
+  hora_partida        String?
+  data_chegada        DateTime?
+  hora_chegada        String?
+  classe              String?
+  base_tarifaria      String?
+  ticket_designator   String?
+  conexao_arp_partida Int?
+  conexao_arp_chegada Int?
+  co2_kg              Float?
+}
+
+model WintourHotel {
+  id              String        @id @default(cuid())
+  ticketId        String        @unique
+  ticket          WintourTicket @relation(fields: [ticketId], references: [id])
+  nr_apts         Int?
+  categ_apt       String?
+  tipo_apt        String?
+  dt_check_in     DateTime?
+  dt_check_out    DateTime?
+  nr_hospedes     Int?
+  reg_alimentacao String?
+  cod_tipo_pagto  String?
+  dt_confirmacao  DateTime?
+  confirmado_por  String?
+}
+
+model WintourLocation {
+  id              String        @id @default(cuid())
+  ticketId        String        @unique
+  ticket          WintourTicket @relation(fields: [ticketId], references: [id])
+  cidade_retirada String?
+  local_retirada  String?
+  dt_retirada     DateTime?
+  hr_retirada     String?
+  local_devolucao String?
+  dt_devolucao    DateTime?
+  hr_devolucao    String?
+  categ_veiculo   String?
+  cod_tipo_pagto  String?
+  dt_confirmacao  DateTime?
+  confirmado_por  String?
+}
+
+model WintourOther {
+  id        String        @id @default(cuid())
+  ticketId  String        @unique
+  ticket    WintourTicket @relation(fields: [ticketId], references: [id])
+  descricao String
+}
+
+model WintourTransfer {
+  id       String        @id @default(cuid())
+  ticketId String        @unique
+  ticket   WintourTicket @relation(fields: [ticketId], references: [id])
+
+  // In
+  hotel_transfer_in  String?
+  cia_iata_chegada   String?
+  numero_voo_chegada String?
+  data_chegada_voo   DateTime?
+  hora_chegada_voo   String?
+  aeroporto_chegada  String?
+
+  // Out
+  hotel_transfer_out String?
+  data_apanhar_pax   DateTime?
+  hora_apanhar_pax   String?
+  cia_iata_partida   String?
+  numero_voo_partida String?
+  data_partida_voo   DateTime?
+  hora_partida_voo   String?
+  aeroporto_partida  String?
+}
+
+model WintourPackage {
+  id                 String        @id @default(cuid())
+  ticketId           String        @unique
+  ticket             WintourTicket @relation(fields: [ticketId], references: [id])
+  cid_dest_principal String?
+  data_inicio_pacote DateTime?
+  data_fim_pacote    DateTime?
+  descricao_pacote   String?
+}
+
+model WintourOtherService {
+  id                      String        @id @default(cuid())
+  ticketId                String        @unique
+  ticket                  WintourTicket @relation(fields: [ticketId], references: [id])
+  cid_dest_principal      String?
+  data_inicio_outros_svcs DateTime?
+  data_fim_outros_svcs    DateTime?
+  descricao_outros_svcs   String?
+}
+
+model WintourCustomerData {
+  id              String        @id @default(cuid())
+  ticketId        String        @unique
+  ticket          WintourTicket @relation(fields: [ticketId], references: [id])
+  acao_cli        String?
+  razao_social    String?
+  tipo_endereco   String?
+  endereco        String?
+  numero          String?
+  complemento     String?
+  bairro          String?
+  cep             String?
+  cidade          String?
+  estado          String?
+  tipo_fj         String?
+  dt_nasc         DateTime?
+  tel             String?
+  celular         String?
+  cpf_cnpj        String?
+  insc_identidade String?
+  sexo            String?
+  dt_cadastro     DateTime?
+  email           String?
 }
 
 enum Role {
