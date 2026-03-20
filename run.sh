@@ -1,2 +1,2 @@
-docker build -t nest-prisma-server .
-docker run -d -t -p 3000:3000 nest-prisma-server
+docker build -t backend-lzt-connect .
+docker run -d -t -p 3000:3000 backend-lzt-connect

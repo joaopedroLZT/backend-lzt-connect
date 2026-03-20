@@ -1,6 +1,6 @@
 {
   "projects": {
-    "nest-prisma-starter": {
+    "backend-lzt-connect": {
       "schemaPath": "src/schema.graphql",
       "extensions": {
         "endpoints": {

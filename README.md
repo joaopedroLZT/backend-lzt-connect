@@ -1,4 +1,4 @@
-# Instructions
+# backend-lzt-connect
 
 Starter template for 😻 [NestJS](https://nestjs.com/) and [Prisma](https://www.prisma.io/).
 
