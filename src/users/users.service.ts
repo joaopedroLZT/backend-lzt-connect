@@ -1,4 +1,5 @@
 import { PrismaService } from 'nestjs-prisma';
+import { Role } from '@prisma/client';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PasswordService } from '../auth/password.service';
 import { ChangePasswordInput } from './dto/change-password.input';
@@ -42,6 +43,13 @@ export class UsersService {
       data: {
         password: hashedPassword,
       },
+      where: { id: userId },
+    });
+  }
+
+  updateRole(userId: string, newRole: Role) {
+    return this.prisma.user.update({
+      data: { role: newRole },
       where: { id: userId },
     });
   }

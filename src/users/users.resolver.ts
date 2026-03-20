@@ -17,6 +17,7 @@ import { UsersService } from './users.service';
 import { User } from './models/user.model';
 import { ChangePasswordInput } from './dto/change-password.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { UpdateRoleInput } from './dto/update-role.input';
 
 @Resolver(() => User)
 @UseGuards(GqlAuthGuard, RolesGuard)
@@ -56,6 +57,15 @@ export class UsersResolver {
       user.id,
       user.password,
       changePassword,
+    );
+  }
+
+  @Roles(Role.ADMIN)
+  @Mutation(() => User)
+  async updateRole(@Args('data') updateRoleData: UpdateRoleInput) {
+    return this.usersService.updateRole(
+      updateRoleData.userId,
+      updateRoleData.role,
     );
   }
 

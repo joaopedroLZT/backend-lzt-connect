@@ -10,6 +10,12 @@ Table User {
   password String [not null]
   firstname String
   lastname String
+  phone String
+  birthday DateTime
+  street String
+  city String
+  state String
+  zipCode String
   posts Post [not null]
   role Role [not null]
 }

@@ -27,6 +27,24 @@ export class User extends BaseModel {
   @Field(() => String, { nullable: true })
   lastname?: string;
 
+  @Field({ nullable: true })
+  phone?: string;
+
+  @Field({ nullable: true })
+  birthday?: Date;
+
+  @Field({ nullable: true })
+  street?: string;
+
+  @Field({ nullable: true })
+  city?: string;
+
+  @Field({ nullable: true })
+  state?: string;
+
+  @Field({ nullable: true })
+  zipCode?: string;
+
   @Field(() => Role)
   role: Role;
 

@@ -20,6 +20,12 @@ model User {
   password  String
   firstname String?
   lastname  String?
+  phone     String?
+  birthday  DateTime?
+  street    String?
+  city      String?
+  state     String?
+  zipCode   String?
   posts     Post[]
   role      Role
 }
