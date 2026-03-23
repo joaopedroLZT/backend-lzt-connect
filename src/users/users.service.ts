@@ -32,7 +32,7 @@ export class UsersService {
     );
 
     if (!passwordValid) {
-      throw new BadRequestException('Invalid password');
+      throw new BadRequestException('Senha Inválida');
     }
 
     const hashedPassword = await this.passwordService.hashPassword(

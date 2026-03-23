@@ -32,7 +32,7 @@ async function bootstrap() {
   if (swaggerConfig.enabled) {
     const options = new DocumentBuilder()
       .setTitle(swaggerConfig.title || 'LZT Connect API')
-      .setDescription(swaggerConfig.description || 'API de Integração LZT Technology')
+      .setDescription(swaggerConfig.description || 'API de Integração LZT')
       .setVersion(swaggerConfig.version || '1.0')
       .addBearerAuth()
       .build();
