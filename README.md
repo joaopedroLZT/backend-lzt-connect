@@ -81,6 +81,19 @@ A documentação interativa da API está disponível via Swagger:
 
 Aqui você pode testar as rotas e visualizar os schemas de entrada e saída.
 
+## Formato de Erro Padrão
+
+Todas as respostas de erro seguem o formato abaixo, processado pelo filtro de exceção global:
+
+```json
+{
+  "statusCode": 400,
+  "timestamp": "2026-03-23T14:35:36.000Z",
+  "path": "/auth/signup",
+  "message": "Mensagem descritiva do erro"
+}
+```
+
 ## Autenticação e Registro
 
 ### Registro e Login
@@ -90,19 +103,51 @@ A API utiliza JWT (JSON Web Token) para autenticação.
 - **Registrar Novo Usuário**:
   - **Método**: `POST`
   - **URL**: `http://localhost:3000/auth/signup`
-  - **Campos Obrigatórios**: `email`, `password` (mínimo 8 caracteres).
-  - **Campos Opcionais**: `firstname`, `lastname`, `birthday`, `phone`, `street`, `city`, `state`, `zipCode`.
+  - **Campos Obrigatórios**: `email`, `password` (mínimo 7 caracteres).
+  - **Campos Opcionais**: `firstname`, `lastname`, `birthday`, `phone`, `street`, `city`, `state`, `zip_code`.
+  
+  - **Possíveis Erros**:
+    - `400 Bad Request (Requisição Inválida)`:
+      - "O e-mail não pode estar vazio"
+      - "E-mail inválido"
+      - "A senha não pode estar vazia"
+      - "A senha deve ter no mínimo 7 caracteres"
+      - "O nome é obrigatório"
+      - "O sobrenome é obrigatório"
+      - "A data de nascimento é obrigatória"
+      - "A data de nascimento deve estar no formato DD/MM/YYYY"
+      - "O telefone é obrigatório"
+      - "A rua é obrigatória"
+      - "A cidade é obrigatória"
+      - "O estado é obrigatório"
+      - "O CEP é obrigatório"
+    - `409 Conflict (Conflito)`:
+      - "O e-mail [email] já está em uso."
 
 - **Realizar Login**:
   - **Método**: `POST`
   - **URL**: `http://localhost:3000/auth/login`
   - **Campos Obrigatórios**: `email`, `password`.
   - **Retorno**: `accessToken` e `refreshToken`.
+  
+  - **Possíveis Erros**:
+    - `400 Bad Request (Requisição Inválida)`:
+      - "O e-mail não pode estar vazio"
+      - "E-mail inválido"
+      - "A senha não pode estar vazia"
+      - "A senha deve ter no mínimo 7 caracteres"
+    - `401 Unauthorized (Não Autorizado)`:
+      - "Usuário ou senha não está cadastrado"
+      - "Senha incorreta"
 
 - **Atualizar Token (Refresh)**:
   - **Método**: `POST`
   - **URL**: `http://localhost:3000/auth/refresh`
   - **Campo Obrigatório**: `token` (refreshToken).
+
+  - **Possíveis Erros**:
+    - `401 Unauthorized (Não Autorizado)`:
+      - "Não autorizado" (Token de atualização inválido ou expirado)
 
 ## Gerenciamento de Usuários
 
@@ -113,17 +158,40 @@ A API utiliza JWT (JSON Web Token) para autenticação.
   - **URL**: `http://localhost:3000/users/me`
   - **Autenticação**: Requer **Bearer Token**.
 
+  - **Possíveis Erros**:
+    - `401 Unauthorized (Não Autorizado)`:
+      - "Usuário não autenticado"
+
 - **Atualizar Perfil**:
   - **Método**: `PATCH`
   - **URL**: `http://localhost:3000/users`
   - **Autenticação**: Requer **Bearer Token**.
   - **Campos Opcionais**: `firstname`, `lastname`, `email`, `phone`, `birthday`, `street`, `city`, `state`, `zipCode`.
 
+  - **Possíveis Erros**:
+    - `400 Bad Request (Requisição Inválida)`:
+      - "E-mail inválido"
+      - "A data de nascimento deve estar no formato DD/MM/YYYY"
+      - "O cargo deve ser um valor válido (ADMIN ou USER)"
+    - `401 Unauthorized (Não Autorizado)`:
+      - "Usuário não autenticado"
+
 - **Alterar Senha**:
   - **Método**: `PATCH`
   - **URL**: `http://localhost:3000/users/change-password`
   - **Autenticação**: Requer **Bearer Token**.
-  - **Campos Obrigatórios**: `oldPassword`, `newPassword`.
+  - **Campos Obrigatórios**: `old_password`, `new_password`.
+
+  - **Possíveis Erros**:
+    - `400 Bad Request (Requisição Inválida)`:
+      - "A senha antiga não pode estar vazia"
+      - "A senha antiga deve ter no mínimo 7 caracteres"
+      - "A nova senha não pode estar vazia"
+      - "A nova senha deve ter no mínimo 7 caracteres"
+      - "A nova senha deve ser diferente da senha antiga"
+    - `401 Unauthorized (Não Autorizado)`:
+      - "Usuário não autenticado"
+      - "Senha antiga incorreta"
 
 ### Administração (Apenas Admin)
 
@@ -134,11 +202,30 @@ As rotas abaixo exigem que o usuário autenticado possua a role `ADMIN`.
   - **URL**: `http://localhost:3000/users`
   - **Autenticação**: Requer **Bearer Token** + Permissão de Admin.
 
+  - **Possíveis Erros**:
+    - `401 Unauthorized (Não Autorizado)`:
+      - "Usuário não autenticado"
+    - `403 Forbidden (Proibido)`:
+      - "Você não tem acesso para realizar essa ação"
+    - `500 Internal Server Error (Erro Interno do Servidor)`:
+      - Se houver algum problema de conexão ou erro inesperado.
+
 - **Atualizar Cargo (Role) de um Usuário**:
   - **Método**: `PATCH`
   - **URL**: `http://localhost:3000/users/role`
   - **Autenticação**: Requer **Bearer Token** + Permissão de Admin.
   - **Campos Obrigatórios**: `userId`, `role` (ex: `ADMIN`, `USER`).
+
+  - **Possíveis Erros**:
+    - `400 Bad Request (Requisição Inválida)`:
+      - "O ID do usuário não pode estar vazio"
+      - "O cargo deve ser um valor válido (ADMIN ou USER)"
+    - `401 Unauthorized (Não Autorizado)`:
+      - "Usuário não autenticado"
+    - `403 Forbidden (Proibido)`:
+      - "Você não tem acesso para realizar essa ação"
+    - `404 Not Found (Não Encontrado)`:
+      - "Usuário não encontrado"
 
 ## Endpoints Principais
 
@@ -148,7 +235,10 @@ Este endpoint é utilizado para importar dados de vendas provenientes do sistema
 
 - **Método**: `POST`
 - **URL**: `http://localhost:3000/sales/import-wintour`
-- **Autenticação**: Requer **Bearer Token** (JWT).
+
+- **Possíveis Erros**:
+  - `400 Bad Request (Requisição Inválida)`: Erros de validação no payload JSON.
+  - `401 Unauthorized (Não Autorizado)`: "Usuário não autenticado".
 
 #### Exemplo de Payload (Request Body)
 
