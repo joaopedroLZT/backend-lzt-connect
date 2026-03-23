@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, HttpCode } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignupInput } from './dto/signup.input';
@@ -19,6 +19,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Realizar login' })
   @ApiResponse({ status: 200, description: 'Login realizado com sucesso' })
   async login(@Body() { email, password }: LoginInput) {
@@ -26,6 +27,7 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Atualizar o access token usando o refresh token' })
   @ApiResponse({ status: 200, description: 'Token atualizado com sucesso' })
   async refreshToken(@Body() { token }: RefreshTokenInput) {

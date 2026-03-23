@@ -9,7 +9,7 @@ export class SignupInput {
 
   @ApiProperty()
   @IsNotEmpty()
-  @MinLength(8)
+  @MinLength(7)
   password: string;
 
   @ApiProperty({ required: false })

@@ -32,7 +32,8 @@ export class UsersController {
   @ApiOperation({ summary: 'Obter perfil do usuário logado' })
   @ApiResponse({ status: 200, type: User })
   async me(@UserEntity() user: User): Promise<User> {
-    return user;
+    const { password, ...result } = user;
+    return result as User;
   }
 
   @Get()
@@ -40,7 +41,8 @@ export class UsersController {
   @ApiOperation({ summary: 'Listar todos os usuários (Apenas Admin)' })
   @ApiResponse({ status: 200, type: [User] })
   async allUsers() {
-    return this.prisma.user.findMany();
+    const users = await this.prisma.user.findMany();
+    return users.map(({ password, ...user }) => user);
   }
 
   @Patch()
@@ -50,7 +52,9 @@ export class UsersController {
     @UserEntity() user: User,
     @Body() newUserData: UpdateUserInput,
   ) {
-    return this.usersService.updateUser(user.id, newUserData);
+    const updatedUser = await this.usersService.updateUser(user.id, newUserData);
+    const { password, ...result } = updatedUser;
+    return result;
   }
 
   @Patch('change-password')
@@ -60,11 +64,13 @@ export class UsersController {
     @UserEntity() user: User,
     @Body() changePassword: ChangePasswordInput,
   ) {
-    return this.usersService.changePassword(
+    const updatedUser = await this.usersService.changePassword(
       user.id,
       user.password,
       changePassword,
     );
+    const { password: _, ...result } = updatedUser;
+    return result;
   }
 
   @Patch('role')
@@ -72,9 +78,11 @@ export class UsersController {
   @ApiOperation({ summary: 'Atualizar cargo de um usuário (Apenas Admin)' })
   @ApiResponse({ status: 200, type: User })
   async updateRole(@Body() updateRoleData: UpdateRoleInput) {
-    return this.usersService.updateRole(
+    const updatedUser = await this.usersService.updateRole(
       updateRoleData.user_id,
       updateRoleData.role,
     );
+    const { password, ...result } = updatedUser;
+    return result;
   }
 }

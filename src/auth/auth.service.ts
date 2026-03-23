@@ -45,7 +45,7 @@ export class AuthService {
         e instanceof Prisma.PrismaClientKnownRequestError &&
         e.code === 'P2002'
       ) {
-        throw new ConflictException(`Email ${payload.email} already used.`);
+        throw new ConflictException(`O e-mail ${payload.email} já está em uso.`);
       }
       throw new Error(e);
     }
@@ -55,7 +55,7 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException(`No user found for email: ${email}`);
+      throw new NotFoundException(`Nenhum usuário encontrado para o e-mail: ${email}`);
     }
 
     const passwordValid = await this.passwordService.validatePassword(
@@ -64,7 +64,7 @@ export class AuthService {
     );
 
     if (!passwordValid) {
-      throw new BadRequestException('Invalid password');
+      throw new BadRequestException('Senha inválida');
     }
 
     return this.generateTokens({
@@ -110,7 +110,7 @@ export class AuthService {
         user_id,
       });
     } catch (e) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Não autorizado');
     }
   }
 }

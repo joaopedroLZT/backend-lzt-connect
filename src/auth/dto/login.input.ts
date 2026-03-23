@@ -8,6 +8,6 @@ export class LoginInput {
 
   @ApiProperty()
   @IsNotEmpty()
-  @MinLength(8)
+  @MinLength(7)
   password: string;
 }
