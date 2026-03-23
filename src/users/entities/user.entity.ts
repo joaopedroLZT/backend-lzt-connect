@@ -30,7 +30,7 @@ export class User extends BaseEntity {
   state?: string;
 
   @ApiProperty({ required: false })
-  zipCode?: string;
+  zip_code?: string;
 
   @ApiProperty({ enum: Role })
   role: Role;

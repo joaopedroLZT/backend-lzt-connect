@@ -225,7 +225,7 @@ export class WintourTicket extends BaseEntity {
   num_bilhete?: string;
 
   @ApiProperty({ required: false })
-  userId?: string;
+  user_id?: string;
 
   @ApiProperty({ type: () => User, required: false })
   user?: User;

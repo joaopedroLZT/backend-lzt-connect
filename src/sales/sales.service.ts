@@ -19,7 +19,7 @@ export class SalesService {
         tickets: {
           create: tickets.map((ticket) => ({
             num_bilhete: ticket.num_bilhete,
-            userId: ticket.userId || undefined,
+            user_id: ticket.user_id || undefined,
             localizador: ticket.localizador,
             fornecedor: ticket.fornecedor,
             passageiro: ticket.passageiro,
@@ -228,7 +228,7 @@ export class SalesService {
                   },
                 }
               : undefined,
-            wintourOther: ticket.other
+            wintour_other: ticket.other
               ? {
                   create: {
                     descricao: ticket.other.descricao,
@@ -257,7 +257,7 @@ export class SalesService {
             package_data: true,
             other_services: true,
             transfer_data: true,
-            wintourOther: true,
+            wintour_other: true,
             user: true,
           },
         },

@@ -6,10 +6,10 @@ export abstract class BaseEntity {
   @ApiProperty({
     description: 'Identifies the date and time when the object was created.',
   })
-  createdAt: Date;
+  created_at: Date;
   @ApiProperty({
     description:
       'Identifies the date and time when the object was last updated.',
   })
-  updatedAt: Date;
+  updated_at: Date;
 }

@@ -218,7 +218,7 @@ export class WintourTicketInput {
   num_bilhete?: string;
 
   @ApiProperty({ required: false })
-  userId?: string;
+  user_id?: string;
 
   @ApiProperty({ required: false })
   localizador?: string;

@@ -40,5 +40,5 @@ export class UpdateUserInput {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  zipCode?: string;
+  zip_code?: string;
 }

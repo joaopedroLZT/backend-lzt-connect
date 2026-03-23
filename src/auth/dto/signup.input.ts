@@ -44,5 +44,5 @@ export class SignupInput {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  zipCode?: string;
+  zip_code?: string;
 }

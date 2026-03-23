@@ -5,10 +5,10 @@ export class ChangePasswordInput {
   @ApiProperty()
   @IsNotEmpty()
   @MinLength(8)
-  oldPassword: string;
+  old_password: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @MinLength(8)
-  newPassword: string;
+  new_password: string;
 }

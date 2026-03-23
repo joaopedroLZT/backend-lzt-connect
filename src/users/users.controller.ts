@@ -73,7 +73,7 @@ export class UsersController {
   @ApiResponse({ status: 200, type: User })
   async updateRole(@Body() updateRoleData: UpdateRoleInput) {
     return this.usersService.updateRole(
-      updateRoleData.userId,
+      updateRoleData.user_id,
       updateRoleData.role,
     );
   }

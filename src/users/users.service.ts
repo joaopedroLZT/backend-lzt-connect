@@ -27,7 +27,7 @@ export class UsersService {
     changePassword: ChangePasswordInput,
   ) {
     const passwordValid = await this.passwordService.validatePassword(
-      changePassword.oldPassword,
+      changePassword.old_password,
       userPassword,
     );
 
@@ -36,7 +36,7 @@ export class UsersService {
     }
 
     const hashedPassword = await this.passwordService.hashPassword(
-      changePassword.newPassword,
+      changePassword.new_password,
     );
 
     return this.prisma.user.update({

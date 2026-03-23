@@ -38,7 +38,7 @@ export class AuthService {
       });
 
       return this.generateTokens({
-        userId: user.id,
+        user_id: user.id,
       });
     } catch (e) {
       if (
@@ -68,31 +68,31 @@ export class AuthService {
     }
 
     return this.generateTokens({
-      userId: user.id,
+      user_id: user.id,
     });
   }
 
-  validateUser(userId: string): Promise<User> {
-    return this.prisma.user.findUnique({ where: { id: userId } });
+  validateUser(user_id: string): Promise<User> {
+    return this.prisma.user.findUnique({ where: { id: user_id } });
   }
 
   getUserFromToken(token: string): Promise<User> {
-    const id = this.jwtService.decode(token)['userId'];
+    const id = this.jwtService.decode(token)['user_id'];
     return this.prisma.user.findUnique({ where: { id } });
   }
 
-  generateTokens(payload: { userId: string }): Token {
+  generateTokens(payload: { user_id: string }): Token {
     return {
-      accessToken: this.generateAccessToken(payload),
-      refreshToken: this.generateRefreshToken(payload),
+      access_token: this.generateAccessToken(payload),
+      refresh_token: this.generateRefreshToken(payload),
     };
   }
 
-  private generateAccessToken(payload: { userId: string }): string {
+  private generateAccessToken(payload: { user_id: string }): string {
     return this.jwtService.sign(payload);
   }
 
-  private generateRefreshToken(payload: { userId: string }): string {
+  private generateRefreshToken(payload: { user_id: string }): string {
     const securityConfig = this.configService.get<SecurityConfig>('security');
     return this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_REFRESH_SECRET'),
@@ -102,12 +102,12 @@ export class AuthService {
 
   refreshToken(token: string) {
     try {
-      const { userId } = this.jwtService.verify(token, {
+      const { user_id } = this.jwtService.verify(token, {
         secret: this.configService.get('JWT_REFRESH_SECRET'),
       });
 
       return this.generateTokens({
-        userId,
+        user_id,
       });
     } catch (e) {
       throw new UnauthorizedException();

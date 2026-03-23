@@ -5,7 +5,7 @@ import { Role } from '@prisma/client';
 export class UpdateRoleInput {
   @ApiProperty()
   @IsNotEmpty()
-  userId: string;
+  user_id: string;
 
   @ApiProperty({ enum: Role })
   @IsEnum(Role)
