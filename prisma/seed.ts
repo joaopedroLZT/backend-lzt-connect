@@ -15,11 +15,11 @@ async function main() {
       password: '$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm', // secret42
       role: 'USER',
       phone: '11988887777',
-      birthday: new Date('2000-01-01'),
+      birthday: '01/01/1990',
       street: 'Av. Paulista, 1000',
       city: 'São Paulo',
       state: 'SP',
-      zipCode: '01310-100',
+      zip_code: '01310-100',
     },
   });
   const user2 = await prisma.user.create({
@@ -30,11 +30,11 @@ async function main() {
       role: 'ADMIN',
       password: '$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm', // secret42
       phone: '11977776666',
-      birthday: new Date('1990-05-15'),
+      birthday: '01/01/1990',
       street: 'Rua Augusta, 500',
       city: 'São Paulo',
       state: 'SP',
-      zipCode: '01410-000',
+      zip_code: '01410-000',
     },
   });
 

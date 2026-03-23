@@ -15,8 +15,13 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Usuário criado com sucesso' })
   async signup(@Body() data: SignupInput) {
     data.email = data.email.toLowerCase();
-    return await this.auth.createUser(data);
+    const tokens = await this.auth.createUser(data);
+    return {
+      message: 'Criado usuario com sucesso!',
+      ...tokens,
+    };
   }
+
 
   @Post('login')
   @HttpCode(200)

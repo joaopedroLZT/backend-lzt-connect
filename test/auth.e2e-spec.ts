@@ -13,7 +13,14 @@ describe('AuthController (e2e)', () => {
     password: 'Password123!',
     firstname: chance.first(),
     lastname: chance.last(),
+    birthday: '01/01/1990',
+    phone: '11999999999',
+    street: 'Rua das Flores, 123',
+    city: 'São Paulo',
+    state: 'SP',
+    zip_code: '01234-567',
   };
+
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -35,6 +42,7 @@ describe('AuthController (e2e)', () => {
       .send(user)
       .expect(201)
       .expect((res) => {
+        expect(res.body.message).toBe('Criado usuario com sucesso!');
         expect(res.body).toHaveProperty('access_token');
         expect(res.body).toHaveProperty('refresh_token');
       });
@@ -61,6 +69,19 @@ describe('AuthController (e2e)', () => {
       });
   });
 
+  it('/auth/login (POST) - Error (Non-existent Email)', () => {
+    return request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email: 'nonexistent@example.com',
+        password: 'Password123!',
+      })
+      .expect(401)
+      .expect((res) => {
+        expect(res.body.message).toBe('Usuário ou senha não está cadastrado');
+      });
+  });
+
   it('/auth/login (POST) - Error (Invalid Password)', () => {
     return request(app.getHttpServer())
       .post('/auth/login')
@@ -68,9 +89,10 @@ describe('AuthController (e2e)', () => {
         email: user.email,
         password: 'WrongPassword',
       })
-      .expect(400)
+      .expect(401)
       .expect((res) => {
-        expect(res.body.message).toBe('Senha inválida');
+        expect(res.body.message).toBe('Senha incorreta');
       });
   });
+
 });

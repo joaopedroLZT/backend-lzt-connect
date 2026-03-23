@@ -1,10 +1,5 @@
-import { PrismaService } from 'nestjs-prisma';
-import { Prisma, User } from '@prisma/client';
 import {
   Injectable,
-  NotFoundException,
-  BadRequestException,
-  ConflictException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -13,12 +8,16 @@ import { PasswordService } from './password.service';
 import { SignupInput } from './dto/signup.input';
 import { Token } from './entities/token.entity';
 import { SecurityConfig } from '../common/configs/config.interface';
+import { UsersService } from '../users/users.service';
+import { User } from '@prisma/client';
+import { PrismaService } from 'nestjs-prisma';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
+    private readonly usersService: UsersService,
     private readonly passwordService: PasswordService,
     private readonly configService: ConfigService,
   ) {}
@@ -28,34 +27,24 @@ export class AuthService {
       payload.password,
     );
 
-    try {
-      const user = await this.prisma.user.create({
-        data: {
-          ...payload,
-          password: hashedPassword,
-          role: 'USER',
-        },
-      });
+    const user = await this.usersService.createUser({
+      ...payload,
+      password: hashedPassword,
+    });
 
-      return this.generateTokens({
-        user_id: user.id,
-      });
-    } catch (e) {
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === 'P2002'
-      ) {
-        throw new ConflictException(`O e-mail ${payload.email} já está em uso.`);
-      }
-      throw new Error(e);
-    }
+    return this.generateTokens({
+      user_id: user.id,
+    });
   }
+
 
   async login(email: string, password: string): Promise<Token> {
     const user = await this.prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException(`Nenhum usuário encontrado para o e-mail: ${email}`);
+      throw new UnauthorizedException(
+        'Usuário ou senha não está cadastrado',
+      );
     }
 
     const passwordValid = await this.passwordService.validatePassword(
@@ -64,13 +53,14 @@ export class AuthService {
     );
 
     if (!passwordValid) {
-      throw new BadRequestException('Senha inválida');
+      throw new UnauthorizedException('Senha incorreta');
     }
 
     return this.generateTokens({
       user_id: user.id,
     });
   }
+
 
   validateUser(user_id: string): Promise<User> {
     return this.prisma.user.findUnique({ where: { id: user_id } });

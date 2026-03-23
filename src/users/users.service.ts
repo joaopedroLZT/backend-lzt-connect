@@ -1,9 +1,16 @@
 import { PrismaService } from 'nestjs-prisma';
-import { Role } from '@prisma/client';
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Role, Prisma } from '@prisma/client';
+import {
+  Injectable,
+  BadRequestException,
+  ConflictException,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PasswordService } from '../auth/password.service';
 import { ChangePasswordInput } from './dto/change-password.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { SignupInput } from '../auth/dto/signup.input';
 
 @Injectable()
 export class UsersService {
@@ -12,14 +19,46 @@ export class UsersService {
     private passwordService: PasswordService,
   ) {}
 
+  private parseBirthday(birthday: string): Date {
+    const [day, month, year] = birthday.split('/').map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  async createUser(data: SignupInput & { password: string }) {
+    try {
+      return await this.prisma.user.create({
+        data: {
+          ...data,
+          birthday: this.parseBirthday(data.birthday),
+          role: 'USER',
+        },
+      });
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
+        throw new ConflictException(`O e-mail ${data.email} já está em uso.`);
+      }
+      throw e;
+    }
+  }
+
   updateUser(userId: string, newUserData: UpdateUserInput) {
+    const data = { ...newUserData };
+    if (data.birthday) {
+      (data as any).birthday = this.parseBirthday(data.birthday);
+    }
+
     return this.prisma.user.update({
-      data: newUserData,
+      data: data as any,
       where: {
         id: userId,
       },
     });
   }
+
+
 
   async changePassword(
     userId: string,
@@ -31,8 +70,12 @@ export class UsersService {
       userPassword,
     );
 
+    if(changePassword.old_password === changePassword.new_password){
+      throw new BadRequestException('A nova senha deve ser diferente da senha antiga');
+    }
+
     if (!passwordValid) {
-      throw new BadRequestException('Senha inválida');
+      throw new UnauthorizedException('Senha antiga incorreta');
     }
 
     const hashedPassword = await this.passwordService.hashPassword(
@@ -47,10 +90,17 @@ export class UsersService {
     });
   }
 
-  updateRole(userId: string, newRole: Role) {
-    return this.prisma.user.update({
-      data: { role: newRole },
-      where: { id: userId },
-    });
+  async updateRole(userId: string, newRole: Role) {
+    try {
+      return await this.prisma.user.update({
+        data: { role: newRole },
+        where: { id: userId },
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('Usuário não encontrado');
+      }
+      throw e;
+    }
   }
 }

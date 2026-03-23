@@ -4,6 +4,7 @@ import {
   Get,
   Patch,
   UseGuards,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { UserEntity } from '../common/decorators/user.decorator';
@@ -32,6 +33,9 @@ export class UsersController {
   @ApiOperation({ summary: 'Obter perfil do usuário logado' })
   @ApiResponse({ status: 200, type: User })
   async me(@UserEntity() user: User): Promise<User> {
+    if (!user) {
+      throw new UnauthorizedException('Usuário não autenticado');
+    }
     const { password, ...result } = user;
     return result as User;
   }
@@ -52,9 +56,10 @@ export class UsersController {
     @UserEntity() user: User,
     @Body() newUserData: UpdateUserInput,
   ) {
-    const updatedUser = await this.usersService.updateUser(user.id, newUserData);
-    const { password, ...result } = updatedUser;
-    return result;
+    await this.usersService.updateUser(user.id, newUserData);
+    return {
+      message: "Usuário alterado com Sucesso!"
+    };
   }
 
   @Patch('change-password')
@@ -64,13 +69,14 @@ export class UsersController {
     @UserEntity() user: User,
     @Body() changePassword: ChangePasswordInput,
   ) {
-    const updatedUser = await this.usersService.changePassword(
+    await this.usersService.changePassword(
       user.id,
       user.password,
       changePassword,
     );
-    const { password: _, ...result } = updatedUser;
-    return result;
+    return {
+      message: "Senha alterada com Sucesso!"
+    };
   }
 
   @Patch('role')
@@ -78,11 +84,13 @@ export class UsersController {
   @ApiOperation({ summary: 'Atualizar cargo de um usuário (Apenas Admin)' })
   @ApiResponse({ status: 200, type: User })
   async updateRole(@Body() updateRoleData: UpdateRoleInput) {
-    const updatedUser = await this.usersService.updateRole(
+    await this.usersService.updateRole(
       updateRoleData.user_id,
       updateRoleData.role,
     );
-    const { password, ...result } = updatedUser;
-    return result;
+    return {
+      message: "Cargo alterado com Sucesso!"
+    };
   }
 }
+

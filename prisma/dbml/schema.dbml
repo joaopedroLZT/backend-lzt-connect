@@ -8,14 +8,14 @@ Table users {
   updated_at DateTime [not null]
   email String [unique, not null]
   password String [not null]
-  firstname String
-  lastname String
-  phone String
-  birthday DateTime
-  street String
-  city String
-  state String
-  zip_code String
+  firstname String [not null]
+  lastname String [not null]
+  phone String [not null]
+  birthday DateTime [not null]
+  street String [not null]
+  city String [not null]
+  state String [not null]
+  zip_code String [not null]
   role Role [not null]
   tickets wintour_tickets [not null]
 }
