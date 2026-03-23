@@ -1,14 +1,13 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsEnum } from 'class-validator';
 import { Role } from '@prisma/client';
 
-@InputType()
 export class UpdateRoleInput {
-  @Field()
+  @ApiProperty()
   @IsNotEmpty()
   userId: string;
 
-  @Field(() => Role)
+  @ApiProperty({ enum: Role })
   @IsEnum(Role)
   role: Role;
 }

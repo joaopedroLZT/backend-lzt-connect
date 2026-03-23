@@ -1,13 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseEntity } from '../../common/entities/base.entity';
+import { User } from '../../users/entities/user.entity';
 
-export class WintourApportionmentInput {
+export class WintourApportionment {
   @ApiProperty()
   ccustos_cliente: string;
   @ApiProperty()
   percentual: number;
 }
 
-export class WintourValueInput {
+export class WintourValue {
   @ApiProperty()
   codigo: string;
   @ApiProperty()
@@ -18,14 +20,14 @@ export class WintourValueInput {
   valor_mp?: number;
 }
 
-export class WintourExpiryInput {
+export class WintourExpiry {
   @ApiProperty()
   codigo: string;
   @ApiProperty()
   valor: Date;
 }
 
-export class WintourSectionInput {
+export class WintourSection {
   @ApiProperty()
   cia_iata: string;
   @ApiProperty({ required: false })
@@ -56,7 +58,12 @@ export class WintourSectionInput {
   co2_kg?: number;
 }
 
-export class WintourHotelInput {
+export class WintourAir {
+  @ApiProperty({ type: () => [WintourSection] })
+  sections: WintourSection[];
+}
+
+export class WintourHotel {
   @ApiProperty({ required: false })
   nr_apts?: number;
   @ApiProperty({ required: false })
@@ -79,7 +86,7 @@ export class WintourHotelInput {
   confirmado_por?: string;
 }
 
-export class WintourCustomerInput {
+export class WintourCustomerData {
   @ApiProperty({ required: false })
   acao_cli?: string;
   @ApiProperty({ required: false })
@@ -120,17 +127,17 @@ export class WintourCustomerInput {
   email?: string;
 }
 
-export class WintourSalesOriginInput {
+export class WintourSalesOrigin {
   @ApiProperty()
   item: number;
 }
 
-export class WintourTicketConjugateInput {
+export class WintourTicketConjugate {
   @ApiProperty()
   item: string;
 }
 
-export class WintourLocationInput {
+export class WintourLocation {
   @ApiProperty({ required: false })
   cidade_retirada?: string;
   @ApiProperty({ required: false })
@@ -155,7 +162,7 @@ export class WintourLocationInput {
   confirmado_por?: string;
 }
 
-export class WintourPackageInput {
+export class WintourPackage {
   @ApiProperty({ required: false })
   cid_dest_principal?: string;
   @ApiProperty({ required: false })
@@ -166,7 +173,7 @@ export class WintourPackageInput {
   descricao_pacote?: string;
 }
 
-export class WintourOtherServiceInput {
+export class WintourOtherService {
   @ApiProperty({ required: false })
   cid_dest_principal?: string;
   @ApiProperty({ required: false })
@@ -177,7 +184,7 @@ export class WintourOtherServiceInput {
   descricao_outros_svcs?: string;
 }
 
-export class WintourTransferInput {
+export class WintourTransfer {
   @ApiProperty({ required: false })
   hotel_transfer_in?: string;
   @ApiProperty({ required: false })
@@ -208,17 +215,20 @@ export class WintourTransferInput {
   aeroporto_partida?: string;
 }
 
-export class WintourOtherInput {
+export class WintourOther {
   @ApiProperty()
   descricao: string;
 }
 
-export class WintourTicketInput {
+export class WintourTicket extends BaseEntity {
   @ApiProperty({ required: false })
   num_bilhete?: string;
 
   @ApiProperty({ required: false })
   userId?: string;
+
+  @ApiProperty({ type: () => User, required: false })
+  user?: User;
 
   @ApiProperty({ required: false })
   localizador?: string;
@@ -385,58 +395,63 @@ export class WintourTicketInput {
   @ApiProperty({ required: false })
   cid_dest_principal?: string;
 
-  @ApiProperty({ type: () => [WintourApportionmentInput], required: false })
-  apportionments?: WintourApportionmentInput[];
+  @ApiProperty({ type: () => [WintourApportionment], required: false })
+  apportionments?: WintourApportionment[];
 
-  @ApiProperty({ type: () => [WintourValueInput], required: false })
-  values?: WintourValueInput[];
+  @ApiProperty({ type: () => [WintourValue], required: false })
+  values?: WintourValue[];
 
-  @ApiProperty({ type: () => [WintourExpiryInput], required: false })
-  expiry?: WintourExpiryInput[];
+  @ApiProperty({ type: () => [WintourExpiry], required: false })
+  expiry?: WintourExpiry[];
 
-  @ApiProperty({ type: () => [WintourSectionInput], required: false })
-  sections?: WintourSectionInput[];
+  @ApiProperty({ type: () => WintourAir, required: false })
+  air_data?: WintourAir;
 
-  @ApiProperty({ type: () => WintourHotelInput, required: false })
-  hotel?: WintourHotelInput;
+  @ApiProperty({ type: () => WintourHotel, required: false })
+  hotel?: WintourHotel;
 
-  @ApiProperty({ type: () => WintourCustomerInput, required: false })
-  customer?: WintourCustomerInput;
+  @ApiProperty({ type: () => WintourCustomerData, required: false })
+  customer?: WintourCustomerData;
 
-  @ApiProperty({ type: () => [WintourSalesOriginInput], required: false })
-  sales_origin?: WintourSalesOriginInput[];
+  @ApiProperty({ type: () => [WintourSalesOrigin], required: false })
+  sales_origin?: WintourSalesOrigin[];
 
-  @ApiProperty({ type: () => [WintourTicketConjugateInput], required: false })
-  ticket_conjugate?: WintourTicketConjugateInput[];
+  @ApiProperty({ type: () => [WintourTicketConjugate], required: false })
+  ticket_conjugate?: WintourTicketConjugate[];
 
-  @ApiProperty({ type: () => WintourLocationInput, required: false })
-  location?: WintourLocationInput;
+  @ApiProperty({ type: () => WintourLocation, required: false })
+  location?: WintourLocation;
 
-  @ApiProperty({ type: () => WintourPackageInput, required: false })
-  package?: WintourPackageInput;
+  @ApiProperty({ type: () => WintourPackage, required: false })
+  package?: WintourPackage;
 
-  @ApiProperty({ type: () => WintourOtherServiceInput, required: false })
-  other_services?: WintourOtherServiceInput;
+  @ApiProperty({ type: () => WintourOtherService, required: false })
+  other_services?: WintourOtherService;
 
-  @ApiProperty({ type: () => WintourTransferInput, required: false })
-  transfer?: WintourTransferInput;
+  @ApiProperty({ type: () => WintourTransfer, required: false })
+  transfer?: WintourTransfer;
 
-  @ApiProperty({ type: () => WintourOtherInput, required: false })
-  other?: WintourOtherInput;
+  @ApiProperty({ type: () => WintourOther, required: false })
+  other?: WintourOther;
 }
 
-export class CreateWintourImportInput {
+export class WintourHeader extends BaseEntity {
   @ApiProperty()
   nr_arquivo: string;
+
   @ApiProperty()
   data_geracao: string;
+
   @ApiProperty()
   hora_geracao: string;
+
   @ApiProperty()
   nome_agencia: string;
-  @ApiProperty({ default: 4 })
+
+  @ApiProperty()
   versao_xml: number;
 
-  @ApiProperty({ type: () => [WintourTicketInput] })
-  tickets: WintourTicketInput[];
+  @ApiProperty({ type: () => [WintourTicket], required: false })
+  tickets?: WintourTicket[];
 }
+

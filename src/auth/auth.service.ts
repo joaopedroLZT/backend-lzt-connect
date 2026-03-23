@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PasswordService } from './password.service';
 import { SignupInput } from './dto/signup.input';
-import { Token } from './models/token.model';
+import { Token } from './entities/token.entity';
 import { SecurityConfig } from '../common/configs/config.interface';
 
 @Injectable()
@@ -114,3 +114,4 @@ export class AuthService {
     }
   }
 }
+

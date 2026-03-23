@@ -1,48 +1,40 @@
-import { IsEmail, IsNotEmpty, MinLength, IsOptional, IsDate } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { IsEmail } from 'class-validator';
+import { BaseEntity } from '../../common/entities/base.entity';
+import { Role } from '@prisma/client';
 
-export class SignupInput {
+export class User extends BaseEntity {
   @ApiProperty()
   @IsEmail()
   email: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @MinLength(8)
-  password: string;
-
   @ApiProperty({ required: false })
-  @IsOptional()
   firstname?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional()
   lastname?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  birthday?: Date;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
   phone?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional()
+  birthday?: Date;
+
+  @ApiProperty({ required: false })
   street?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional()
   city?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional()
   state?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional()
   zipCode?: string;
+
+  @ApiProperty({ enum: Role })
+  role: Role;
+
+  password: string;
 }
+

@@ -18,18 +18,9 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('/ (GET) - Should fail or 404 since we removed the handler', () => {
     return request(app.getHttpServer())
       .get('/')
-      .expect(200)
-      .expect('Hello World!');
-  });
-
-  it('/hello/:name (GET)', () => {
-    const name = chance.name();
-    return request(app.getHttpServer())
-      .get(`/hello/${name}`)
-      .expect(200)
-      .expect(`Hello ${name}!`);
+      .expect(404);
   });
 });

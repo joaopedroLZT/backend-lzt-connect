@@ -14,14 +14,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Validation
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   // enable shutdown hook
   app.enableShutdownHooks();
 
   // Prisma Client Exception Filter for unhandled exceptions
   const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter as any));
 
   const configService = app.get(ConfigService);
   const nestConfig = configService.get<NestConfig>('nest');
@@ -31,9 +31,10 @@ async function bootstrap() {
   // Swagger Api
   if (swaggerConfig.enabled) {
     const options = new DocumentBuilder()
-      .setTitle(swaggerConfig.title || 'Nestjs')
-      .setDescription(swaggerConfig.description || 'The nestjs API description')
+      .setTitle(swaggerConfig.title || 'LZT Connect API')
+      .setDescription(swaggerConfig.description || 'API de Integração LZT Technology')
       .setVersion(swaggerConfig.version || '1.0')
+      .addBearerAuth()
       .build();
     const document = SwaggerModule.createDocument(app, options);
 

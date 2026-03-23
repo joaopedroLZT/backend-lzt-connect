@@ -1,23 +1,44 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsEmail, IsDate } from 'class-validator';
+import { Type } from 'class-transformer';
 
-@InputType()
 export class UpdateUserInput {
-  @Field({ nullable: true })
+  @ApiProperty({ required: false })
+  @IsOptional()
   firstname?: string;
-  @Field({ nullable: true })
+
+  @ApiProperty({ required: false })
+  @IsOptional()
   lastname?: string;
-  @Field({ nullable: true })
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsEmail()
   email?: string;
-  @Field({ nullable: true })
+
+  @ApiProperty({ required: false })
+  @IsOptional()
   phone?: string;
-  @Field({ nullable: true })
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
   birthday?: Date;
-  @Field({ nullable: true })
+
+  @ApiProperty({ required: false })
+  @IsOptional()
   street?: string;
-  @Field({ nullable: true })
+
+  @ApiProperty({ required: false })
+  @IsOptional()
   city?: string;
-  @Field({ nullable: true })
+
+  @ApiProperty({ required: false })
+  @IsOptional()
   state?: string;
-  @Field({ nullable: true })
+
+  @ApiProperty({ required: false })
+  @IsOptional()
   zipCode?: string;
 }

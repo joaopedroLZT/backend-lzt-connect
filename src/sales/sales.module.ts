@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { SalesResolver } from './sales.resolver';
 import { SalesService } from './sales.service';
+import { SalesController } from './sales.controller';
 
 @Module({
-  providers: [SalesResolver, SalesService],
+  imports: [],
+  controllers: [SalesController],
+  providers: [SalesService],
 })
 export class SalesModule {}
