@@ -51,6 +51,38 @@ describe('UsersService', () => {
     });
   });
 
+  describe('createManagedUser', () => {
+    it('should create managed user successfully', async () => {
+      mockPasswordService.hashPassword.mockResolvedValue('hashed-password');
+      mockPrismaService.user.create = jest.fn().mockResolvedValue({
+        id: '1',
+        email: 'admin@lzt.com',
+        password: 'hashed-password',
+        firstname: 'Admin',
+      });
+
+      const result = await service.createManagedUser({
+        email: 'admin@lzt.com',
+        password: '1234567',
+        firstname: 'Admin',
+        lastname: 'User',
+        birthday: '01/01/2000',
+        phone: '11999999999',
+        street: 'Rua A',
+        city: 'Sao Paulo',
+        state: 'SP',
+        zip_code: '00000-000',
+      });
+
+      expect(mockPasswordService.hashPassword).toHaveBeenCalledWith('1234567');
+      expect(result).toEqual({
+        id: '1',
+        email: 'admin@lzt.com',
+        firstname: 'Admin',
+      });
+    });
+  });
+
   describe('changePassword', () => {
     it('should change password successfully', async () => {
       const changePasswordData = { old_password: 'old', new_password: 'new' };

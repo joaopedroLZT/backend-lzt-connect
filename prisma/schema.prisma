@@ -32,16 +32,47 @@ model User {
   @@map("users")
 }
 
+model Customer {
+  id              String   @id @default(cuid())
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  acao_cli        String?
+  razao_social    String
+  tipo_endereco   String?
+  endereco        String?
+  numero          String?
+  complemento     String?
+  bairro          String?
+  cep             String?
+  cidade          String?
+  estado          String?
+  tipo_fj         String?
+  dt_nasc         DateTime?
+  tel             String?
+  celular         String?
+  cpf_cnpj        String?  @unique
+  insc_identidade String?
+  sexo            String?
+  dt_cadastro     DateTime?
+  email           String?  @unique
+  tickets         WintourTicket[]
+
+  @@map("customers")
+}
+
 model WintourHeader {
-  id           String          @id @default(cuid())
-  created_at   DateTime        @default(now())
-  updated_at   DateTime        @updatedAt
-  nr_arquivo   String          @unique
-  data_geracao String
-  hora_geracao String
-  nome_agencia String
-  versao_xml   Int             @default(4)
-  tickets      WintourTicket[]
+  id                       String          @id @default(cuid())
+  created_at               DateTime        @default(now())
+  updated_at               DateTime        @updatedAt
+  nr_arquivo               String          @unique
+  data_geracao             String
+  hora_geracao             String
+  nome_agencia             String
+  versao_xml               Int             @default(4)
+  integration_status       String?         @map("integration_status")
+  integration_protocol     String?         @map("integration_protocol")
+  integration_raw_response String?         @db.Text @map("integration_raw_response")
+  tickets                  WintourTicket[]
 
   @@map("wintour_headers")
 }
@@ -56,6 +87,9 @@ model WintourTicket {
 
   user    User?   @relation(fields: [user_id], references: [id])
   user_id String? @map("user_id")
+
+  customer_record    Customer? @relation(fields: [customer_id], references: [id])
+  customer_id        String?   @map("customer_id")
 
   // Campos principais do Bilhete
   idv_externo              String?

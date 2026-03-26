@@ -20,6 +20,32 @@ Table users {
   tickets wintour_tickets [not null]
 }
 
+Table customers {
+  id String [pk]
+  created_at DateTime [default: `now()`, not null]
+  updated_at DateTime [not null]
+  acao_cli String
+  razao_social String [not null]
+  tipo_endereco String
+  endereco String
+  numero String
+  complemento String
+  bairro String
+  cep String
+  cidade String
+  estado String
+  tipo_fj String
+  dt_nasc DateTime
+  tel String
+  celular String
+  cpf_cnpj String [unique]
+  insc_identidade String
+  sexo String
+  dt_cadastro DateTime
+  email String [unique]
+  tickets wintour_tickets [not null]
+}
+
 Table wintour_headers {
   id String [pk]
   created_at DateTime [default: `now()`, not null]
@@ -29,6 +55,9 @@ Table wintour_headers {
   hora_geracao String [not null]
   nome_agencia String [not null]
   versao_xml Int [not null, default: 4]
+  integration_status String
+  integration_protocol String
+  integration_raw_response String
   tickets wintour_tickets [not null]
 }
 
@@ -40,6 +69,8 @@ Table wintour_tickets {
   header_id String
   user users
   user_id String
+  customer_record customers
+  customer_id String
   idv_externo String
   id_posto_atendimento Int
   posto_atendimento String
@@ -319,6 +350,8 @@ Enum Role {
 Ref: wintour_tickets.header_id > wintour_headers.id
 
 Ref: wintour_tickets.user_id > users.id
+
+Ref: wintour_tickets.customer_id > customers.id
 
 Ref: wintour_apportionments.ticket_id > wintour_tickets.id
 

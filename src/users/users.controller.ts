@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Post,
   Patch,
   UseGuards,
   UnauthorizedException,
@@ -18,6 +19,7 @@ import { ChangePasswordInput } from './dto/change-password.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { UpdateRoleInput } from './dto/update-role.input';
 import { PrismaService } from 'nestjs-prisma';
+import { SignupInput } from '../auth/dto/signup.input';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -47,6 +49,15 @@ export class UsersController {
   async allUsers() {
     const users = await this.prisma.user.findMany();
     return users.map(({ password, ...user }) => user);
+  }
+
+  @Post()
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Criar usuario (Apenas Admin)' })
+  @ApiResponse({ status: 201, type: User })
+  async createUser(@Body() data: SignupInput) {
+    data.email = data.email.toLowerCase();
+    return this.usersService.createManagedUser(data);
   }
 
   @Patch()
@@ -93,4 +104,3 @@ export class UsersController {
     };
   }
 }
-

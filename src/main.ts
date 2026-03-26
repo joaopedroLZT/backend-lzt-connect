@@ -47,9 +47,16 @@ async function bootstrap() {
 
   // Cors
   if (corsConfig.enabled) {
-    app.enableCors();
+    app.enableCors({
+      origin: [
+        'http://localhost:3001',
+        'http://127.0.0.1:3001',
+        'http://192.168.1.163:3001',
+      ],
+      credentials: true,
+    });
   }
 
-  await app.listen(process.env.PORT || nestConfig.port || 3000);
+  await app.listen(process.env.PORT || nestConfig.port || 3000,'0.0.0.0');
 }
 bootstrap();

@@ -44,6 +44,18 @@ export class UsersService {
     }
   }
 
+  async createManagedUser(data: SignupInput) {
+    const hashedPassword = await this.passwordService.hashPassword(data.password);
+
+    const user = await this.createUser({
+      ...data,
+      password: hashedPassword,
+    });
+
+    const { password, ...result } = user;
+    return result;
+  }
+
   updateUser(userId: string, newUserData: UpdateUserInput) {
     const data = { ...newUserData };
     if (data.birthday) {

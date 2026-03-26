@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from '../../common/entities/base.entity';
 import { User } from '../../users/entities/user.entity';
+import { Customer } from '../../customers/entities/customer.entity';
 
 export class WintourApportionment {
   @ApiProperty()
@@ -231,6 +232,12 @@ export class WintourTicket extends BaseEntity {
   user?: User;
 
   @ApiProperty({ required: false })
+  customer_id?: string;
+
+  @ApiProperty({ type: () => Customer, required: false })
+  customer_record?: Customer;
+
+  @ApiProperty({ required: false })
   localizador?: string;
 
   @ApiProperty({ required: false })
@@ -451,7 +458,35 @@ export class WintourHeader extends BaseEntity {
   @ApiProperty()
   versao_xml: number;
 
+  @ApiProperty({ required: false })
+  integration_status?: string;
+
+  @ApiProperty({ required: false })
+  integration_protocol?: string;
+
+  @ApiProperty({ required: false })
+  integration_raw_response?: string;
+
   @ApiProperty({ type: () => [WintourTicket], required: false })
   tickets?: WintourTicket[];
+}
+
+export class WintourIntegrationResult {
+  @ApiProperty()
+  status: string;
+
+  @ApiProperty()
+  protocolo: string;
+
+  @ApiProperty()
+  raw_response: string;
+}
+
+export class WintourImportResponse {
+  @ApiProperty({ type: () => WintourHeader })
+  importacao: WintourHeader;
+
+  @ApiProperty({ type: () => WintourIntegrationResult })
+  integracao: WintourIntegrationResult;
 }
 
