@@ -84,6 +84,30 @@ export class SalesService {
     return `${hours}:${minutes}`;
   }
 
+  private parseDate(value?: Date | string | null): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    if (value instanceof Date) {
+      return Number.isNaN(value.getTime()) ? null : value;
+    }
+
+    if (typeof value === 'string') {
+      // Handle DD/MM/YYYY
+      const dmvMatch = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (dmvMatch) {
+        const [_, day, month, year] = dmvMatch;
+        return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      }
+
+      const parsed = new Date(value);
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    return null;
+  }
+
   private tag(name: string, value?: unknown) {
     return `<${name}>${this.escapeXml(value)}</${name}>`;
   }
@@ -501,13 +525,13 @@ export class SalesService {
                   cidade: linkedCustomer.cidade,
                   estado: linkedCustomer.estado,
                   tipo_fj: linkedCustomer.tipo_fj,
-                  dt_nasc: linkedCustomer.dt_nasc,
+                  dt_nasc: this.parseDate(linkedCustomer.dt_nasc) || undefined,
                   tel: linkedCustomer.tel,
                   celular: linkedCustomer.celular,
                   cpf_cnpj: linkedCustomer.cpf_cnpj,
                   insc_identidade: linkedCustomer.insc_identidade,
                   sexo: linkedCustomer.sexo,
-                  dt_cadastro: linkedCustomer.dt_cadastro,
+                  dt_cadastro: this.parseDate(linkedCustomer.dt_cadastro) || undefined,
                   email: linkedCustomer.email,
                 }
               : undefined);
@@ -522,8 +546,8 @@ export class SalesService {
               idv_externo: ticket.idv_externo,
               id_posto_atendimento: ticket.id_posto_atendimento,
               posto_atendimento: ticket.posto_atendimento,
-              dt_interna_cadastro: ticket.dt_interna_cadastro,
-              data_lancamento: ticket.data_lancamento,
+              dt_interna_cadastro: this.parseDate(ticket.dt_interna_cadastro),
+              data_lancamento: this.parseDate(ticket.data_lancamento),
               codigo_produto: ticket.codigo_produto,
               prestador_svc: ticket.prestador_svc,
               tour_code: ticket.tour_code,
@@ -544,7 +568,7 @@ export class SalesService {
               cliente: ticket.cliente ?? linkedCustomer?.razao_social,
               ccustos_cliente: ticket.ccustos_cliente,
               numero_requisicao: ticket.numero_requisicao,
-              data_requisicao: ticket.data_requisicao,
+              data_requisicao: this.parseDate(ticket.data_requisicao),
               tipo_passageiro: ticket.tipo_passageiro,
               solicitante: ticket.solicitante,
               aprovador: ticket.aprovador,
@@ -588,7 +612,7 @@ export class SalesService {
               expiry_dates: {
                 create: ticket.expiry?.map(e => ({
                   codigo: e.codigo,
-                  valor: e.valor,
+                  valor: this.parseDate(e.valor) || new Date(),
                 })),
               },
               air_data: ticket.sections
@@ -600,9 +624,9 @@ export class SalesService {
                           numero_voo: s.numero_voo,
                           aeroporto_origem: s.aeroporto_origem,
                           aeroporto_destino: s.aeroporto_destino,
-                          data_partida: s.data_partida,
+                          data_partida: this.parseDate(s.data_partida),
                           hora_partida: s.hora_partida,
-                          data_chegada: s.data_chegada,
+                          data_chegada: this.parseDate(s.data_chegada),
                           hora_chegada: s.hora_chegada,
                           classe: s.classe,
                           base_tarifaria: s.base_tarifaria,
@@ -621,12 +645,12 @@ export class SalesService {
                       nr_apts: ticket.hotel.nr_apts,
                       categ_apt: ticket.hotel.categ_apt,
                       tipo_apt: ticket.hotel.tipo_apt,
-                      dt_check_in: ticket.hotel.dt_check_in,
-                      dt_check_out: ticket.hotel.dt_check_out,
+                      dt_check_in: this.parseDate(ticket.hotel.dt_check_in),
+                      dt_check_out: this.parseDate(ticket.hotel.dt_check_out),
                       nr_hospedes: ticket.hotel.nr_hospedes,
                       reg_alimentacao: ticket.hotel.reg_alimentacao,
                       cod_tipo_pagto: ticket.hotel.cod_tipo_pagto,
-                      dt_confirmacao: ticket.hotel.dt_confirmacao,
+                      dt_confirmacao: this.parseDate(ticket.hotel.dt_confirmacao),
                       confirmado_por: ticket.hotel.confirmado_por,
                     },
                   }
@@ -645,13 +669,13 @@ export class SalesService {
                       cidade: customerSnapshot.cidade,
                       estado: customerSnapshot.estado,
                       tipo_fj: customerSnapshot.tipo_fj,
-                      dt_nasc: customerSnapshot.dt_nasc,
+                      dt_nasc: this.parseDate(customerSnapshot.dt_nasc),
                       tel: customerSnapshot.tel,
                       celular: customerSnapshot.celular,
                       cpf_cnpj: customerSnapshot.cpf_cnpj,
                       insc_identidade: customerSnapshot.insc_identidade,
                       sexo: customerSnapshot.sexo,
-                      dt_cadastro: customerSnapshot.dt_cadastro,
+                      dt_cadastro: this.parseDate(customerSnapshot.dt_cadastro),
                       email: customerSnapshot.email,
                     },
                   }
@@ -671,14 +695,14 @@ export class SalesService {
                     create: {
                       cidade_retirada: ticket.location.cidade_retirada,
                       local_retirada: ticket.location.local_retirada,
-                      dt_retirada: ticket.location.dt_retirada,
+                      dt_retirada: this.parseDate(ticket.location.dt_retirada),
                       hr_retirada: ticket.location.hr_retirada,
                       local_devolucao: ticket.location.local_devolucao,
-                      dt_devolucao: ticket.location.dt_devolucao,
+                      dt_devolucao: this.parseDate(ticket.location.dt_devolucao),
                       hr_devolucao: ticket.location.hr_devolucao,
                       categ_veiculo: ticket.location.categ_veiculo,
                       cod_tipo_pagto: ticket.location.cod_tipo_pagto,
-                      dt_confirmacao: ticket.location.dt_confirmacao,
+                      dt_confirmacao: this.parseDate(ticket.location.dt_confirmacao),
                       confirmado_por: ticket.location.confirmado_por,
                     },
                   }
@@ -687,8 +711,8 @@ export class SalesService {
                 ? {
                     create: {
                       cid_dest_principal: ticket.package.cid_dest_principal,
-                      data_inicio_pacote: ticket.package.data_inicio_pacote,
-                      data_fim_pacote: ticket.package.data_fim_pacote,
+                      data_inicio_pacote: this.parseDate(ticket.package.data_inicio_pacote),
+                      data_fim_pacote: this.parseDate(ticket.package.data_fim_pacote),
                       descricao_pacote: ticket.package.descricao_pacote,
                     },
                   }
@@ -697,8 +721,8 @@ export class SalesService {
                 ? {
                     create: {
                       cid_dest_principal: ticket.other_services.cid_dest_principal,
-                      data_inicio_outros_svcs: ticket.other_services.data_inicio_outros_svcs,
-                      data_fim_outros_svcs: ticket.other_services.data_fim_outros_svcs,
+                      data_inicio_outros_svcs: this.parseDate(ticket.other_services.data_inicio_outros_svcs),
+                      data_fim_outros_svcs: this.parseDate(ticket.other_services.data_fim_outros_svcs),
                       descricao_outros_svcs: ticket.other_services.descricao_outros_svcs,
                     },
                   }
@@ -709,15 +733,15 @@ export class SalesService {
                       hotel_transfer_in: ticket.transfer.hotel_transfer_in,
                       cia_iata_chegada: ticket.transfer.cia_iata_chegada,
                       numero_voo_chegada: ticket.transfer.numero_voo_chegada,
-                      data_chegada_voo: ticket.transfer.data_chegada_voo,
+                      data_chegada_voo: this.parseDate(ticket.transfer.data_chegada_voo),
                       hora_chegada_voo: ticket.transfer.hora_chegada_voo,
                       aeroporto_chegada: ticket.transfer.aeroporto_chegada,
                       hotel_transfer_out: ticket.transfer.hotel_transfer_out,
-                      data_apanhar_pax: ticket.transfer.data_apanhar_pax,
+                      data_apanhar_pax: this.parseDate(ticket.transfer.data_apanhar_pax),
                       hora_apanhar_pax: ticket.transfer.hora_apanhar_pax,
                       cia_iata_partida: ticket.transfer.cia_iata_partida,
                       numero_voo_partida: ticket.transfer.numero_voo_partida,
-                      data_partida_voo: ticket.transfer.data_partida_voo,
+                      data_partida_voo: this.parseDate(ticket.transfer.data_partida_voo),
                       hora_partida_voo: ticket.transfer.hora_partida_voo,
                       aeroporto_partida: ticket.transfer.aeroporto_partida,
                     },
